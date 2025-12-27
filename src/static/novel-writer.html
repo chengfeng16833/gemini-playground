@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小说创作工作室</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="css/novel-writer.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 顶部导航栏 -->
+        <header class="app-header">
+            <div class="header-left">
+                <h1 class="app-title">小说创作工作室</h1>
+            </div>
+            <div class="header-right">
+                <button id="ai-toggle" class="icon-button" title="AI助手">
+                    <span class="material-symbols-outlined">psychology</span>
+                </button>
+                <button id="settings-toggle" class="icon-button" title="设置">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 左侧导航栏 -->
+        <nav class="sidebar">
+            <button class="nav-item active" data-module="workspace">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="nav-text">工作区</span>
+            </button>
+            <button class="nav-item" data-module="idea-manager">
+                <span class="material-symbols-outlined">lightbulb</span>
+                <span class="nav-text">创意管理</span>
+            </button>
+            <button class="nav-item" data-module="book-analyzer">
+                <span class="material-symbols-outlined">auto_stories</span>
+                <span class="nav-text">拆书分析</span>
+            </button>
+            <button class="nav-item" data-module="novel-composer">
+                <span class="material-symbols-outlined">edit_note</span>
+                <span class="nav-text">小说创作</span>
+            </button>
+        </nav>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 工作区模块 -->
+            <div id="workspace-module" class="module active">
+                <div class="module-header">
+                    <h2>工作区概览</h2>
+                </div>
+                <div class="workspace-grid">
+                    <div class="workspace-card">
+                        <div class="card-icon">
+                            <span class="material-symbols-outlined">lightbulb</span>
+                        </div>
+                        <h3>创意库</h3>
+                        <p class="stat-number" id="idea-count">0</p>
+                        <p class="stat-label">个创意</p>
+                    </div>
+                    <div class="workspace-card">
+                        <div class="card-icon">
+                            <span class="material-symbols-outlined">auto_stories</span>
+                        </div>
+                        <h3>分析笔记</h3>
+                        <p class="stat-number" id="analysis-count">0</p>
+                        <p class="stat-label">篇分析</p>
+                    </div>
+                    <div class="workspace-card">
+                        <div class="card-icon">
+                            <span class="material-symbols-outlined">edit_note</span>
+                        </div>
+                        <h3>小说作品</h3>
+                        <p class="stat-number" id="novel-count">0</p>
+                        <p class="stat-label">部作品</p>
+                    </div>
+                    <div class="workspace-card">
+                        <div class="card-icon">
+                            <span class="material-symbols-outlined">schedule</span>
+                        </div>
+                        <h3>今日字数</h3>
+                        <p class="stat-number" id="today-words">0</p>
+                        <p class="stat-label">字</p>
+                    </div>
+                </div>
+                <div class="recent-section">
+                    <h3>最近编辑</h3>
+                    <div id="recent-items" class="recent-list">
+                        <p class="empty-message">暂无最近编辑的内容</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 创意管理模块 -->
+            <div id="idea-manager-module" class="module">
+                <div class="module-header">
+                    <h2>创意管理</h2>
+                    <button id="add-idea" class="primary-button">
+                        <span class="material-symbols-outlined">add</span>
+                        新增创意
+                    </button>
+                </div>
+                <div class="idea-filters">
+                    <input type="text" id="idea-search" placeholder="搜索创意..." class="search-input">
+                    <select id="idea-category-filter" class="filter-select">
+                        <option value="all">全部分类</option>
+                        <option value="character">角色设定</option>
+                        <option value="plot">情节构思</option>
+                        <option value="worldview">世界观</option>
+                        <option value="dialogue">对话灵感</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+                <div id="idea-list" class="idea-list">
+                    <p class="empty-message">暂无创意，点击"新增创意"开始记录灵感</p>
+                </div>
+            </div>
+
+            <!-- 拆书分析模块 -->
+            <div id="book-analyzer-module" class="module">
+                <div class="module-header">
+                    <h2>拆书分析</h2>
+                    <button id="add-analysis" class="primary-button">
+                        <span class="material-symbols-outlined">add</span>
+                        新建分析
+                    </button>
+                </div>
+                <div id="analysis-list" class="analysis-list">
+                    <p class="empty-message">暂无分析笔记，点击"新建分析"开始拆解作品</p>
+                </div>
+            </div>
+
+            <!-- 小说创作模块 -->
+            <div id="novel-composer-module" class="module">
+                <div class="module-header">
+                    <h2>小说创作</h2>
+                    <button id="add-novel" class="primary-button">
+                        <span class="material-symbols-outlined">add</span>
+                        新建小说
+                    </button>
+                </div>
+                <div id="novel-list" class="novel-list">
+                    <p class="empty-message">暂无小说项目，点击"新建小说"开始创作</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- AI助手面板 -->
+        <aside id="ai-panel" class="ai-panel hidden">
+            <div class="ai-header">
+                <h3>AI创作助手</h3>
+                <button id="close-ai" class="icon-button">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="ai-config">
+                <input type="password" id="ai-api-key" placeholder="请输入 Gemini API Key" class="input-field">
+                <select id="ai-model" class="select-field">
+                    <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash</option>
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                </select>
+            </div>
+            <div class="ai-chat">
+                <div id="ai-messages" class="ai-messages"></div>
+                <div class="ai-input-area">
+                    <textarea id="ai-input" placeholder="向AI助手提问或寻求创作建议..." rows="3"></textarea>
+                    <button id="ai-send" class="primary-button">发送</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 设置面板 -->
+        <aside id="settings-panel" class="settings-panel hidden">
+            <div class="settings-header">
+                <h3>设置</h3>
+                <button id="close-settings" class="icon-button">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="settings-content">
+                <div class="setting-group">
+                    <h4>数据管理</h4>
+                    <button id="export-data" class="secondary-button">导出数据</button>
+                    <button id="import-data" class="secondary-button">导入数据</button>
+                    <button id="clear-data" class="danger-button">清空所有数据</button>
+                </div>
+                <div class="setting-group">
+                    <h4>编辑器设置</h4>
+                    <label>
+                        <input type="checkbox" id="auto-save" checked>
+                        自动保存
+                    </label>
+                    <label>
+                        字体大小：
+                        <input type="range" id="font-size" min="12" max="24" value="16">
+                        <span id="font-size-value">16px</span>
+                    </label>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 模态对话框容器 -->
+    <div id="modal-container"></div>
+
+    <script src="js/novel/main.js" type="module"></script>
+</body>
+</html>
