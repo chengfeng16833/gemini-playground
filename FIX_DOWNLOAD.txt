@@ -1,0 +1,82 @@
+===================================================
+  修复下载错误 - 详细步骤
+===================================================
+
+【问题原因】
+你下载的是 main 分支，而小说创作工作室在另一个分支上。
+
+【解决方案 1 - 重新下载正确分支】
+
+1. 访问这个链接（复制到浏览器地址栏）：
+   https://github.com/chengfeng16833/gemini-playground/tree/claude/novel-writing-app-Kra5R
+
+2. 点击页面上的绿色 "Code" 按钮
+
+3. 选择 "Download ZIP"
+
+4. 下载后解压到任意位置（比如：C:\Projects\）
+
+5. 打开解压后的文件夹
+
+6. 在文件夹空白处，按住 Shift 键，右键点击
+
+7. 选择"在此处打开 PowerShell 窗口"或"在此处打开命令窗口"
+
+8. 输入并回车：
+   node server.js
+
+9. 浏览器访问：
+   http://localhost:8787/novel-writer.html
+
+---
+
+【解决方案 2 - 使用 Git 命令】
+
+如果你已安装 Git：
+
+1. 删除之前下载的文件夹
+
+2. 打开命令行（cmd 或 PowerShell）
+
+3. 进入你想保存项目的文件夹，例如：
+   cd C:\Projects
+
+4. 运行以下命令：
+   git clone -b claude/novel-writing-app-Kra5R https://github.com/chengfeng16833/gemini-playground.git
+
+5. 进入项目：
+   cd gemini-playground
+
+6. 启动服务器：
+   node server.js
+
+7. 浏览器访问：
+   http://localhost:8787/novel-writer.html
+
+---
+
+【如何确认下载正确】
+
+下载正确的分支后，项目根目录应该包含这些文件：
+✓ server.js
+✓ NOVEL_WRITER_README.md
+✓ DOWNLOAD_GUIDE.md
+✓ src/static/novel-writer.html
+✓ src/static/css/novel-writer.css
+✓ src/static/js/novel/（文件夹）
+
+如果没有这些文件，说明分支不对。
+
+---
+
+【快速检查方法】
+
+在解压后的文件夹中：
+- 按 Ctrl+F 搜索 "server.js"
+- 如果找不到，说明下载的分支不对
+
+---
+
+需要帮助？告诉我：
+1. 你看到的文件夹名称是什么？
+2. 文件夹里有哪些文件？
