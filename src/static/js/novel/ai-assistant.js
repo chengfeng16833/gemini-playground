@@ -12,6 +12,7 @@ export class AIAssistant {
 
     init() {
         this.loadApiKey();
+        this.loadModel();
         this.bindEvents();
     }
 
@@ -20,6 +21,17 @@ export class AIAssistant {
         const input = document.getElementById('ai-api-key');
         if (input && this.apiKey) {
             input.value = this.apiKey;
+        }
+    }
+
+    loadModel() {
+        const settings = storage.getSettings();
+        if (settings.aiModel) {
+            this.model = settings.aiModel;
+        }
+        const select = document.getElementById('ai-model');
+        if (select && this.model) {
+            select.value = this.model;
         }
     }
 
@@ -33,6 +45,10 @@ export class AIAssistant {
         // 模型选择
         document.getElementById('ai-model')?.addEventListener('change', (e) => {
             this.model = e.target.value;
+            const settings = storage.getSettings();
+            settings.aiModel = this.model;
+            storage.saveSettings(settings);
+            showToast(`已切换到 ${this.getModelName(this.model)}`, 'success');
         });
 
         // 发送消息
@@ -106,6 +122,31 @@ export class AIAssistant {
         this.messages.push({ role, content });
     }
 
+    getModelName(modelId) {
+        const modelNames = {
+            'gemini-2.0-flash-exp': 'Gemini 2.0 Flash',
+            'gemini-2.0-flash-thinking-exp': 'Gemini 2.0 Flash Thinking',
+            'gemini-1.5-pro-latest': 'Gemini 1.5 Pro (最新)',
+            'gemini-1.5-pro': 'Gemini 1.5 Pro',
+            'gemini-1.5-flash': 'Gemini 1.5 Flash',
+            'gemini-1.5-flash-8b': 'Gemini 1.5 Flash 8B'
+        };
+        return modelNames[modelId] || modelId;
+    }
+
+    getModelConfig(modelId) {
+        // 针对不同模型返回优化的配置
+        const isThinking = modelId.includes('thinking');
+        const isFast = modelId.includes('flash-8b');
+
+        return {
+            temperature: isThinking ? 1.0 : 0.9,
+            topK: isThinking ? 64 : 40,
+            topP: 0.95,
+            maxOutputTokens: isThinking ? 8192 : (isFast ? 1024 : 2048)
+        };
+    }
+
     async callGeminiAPI(userMessage) {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
 
@@ -118,6 +159,8 @@ export class AIAssistant {
 5. 提供文字润色建议
 
 请用简洁、有启发性的方式回答问题，并给出具体可行的建议。`;
+
+        const generationConfig = this.getModelConfig(this.model);
 
         const response = await fetch(url, {
             method: 'POST',
@@ -137,12 +180,7 @@ export class AIAssistant {
                         ]
                     }
                 ],
-                generationConfig: {
-                    temperature: 0.9,
-                    topK: 40,
-                    topP: 0.95,
-                    maxOutputTokens: 2048
-                }
+                generationConfig
             })
         });
 
