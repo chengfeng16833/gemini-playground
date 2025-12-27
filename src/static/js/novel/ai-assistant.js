@@ -5,7 +5,7 @@ import { showToast } from './ui-utils.js';
 export class AIAssistant {
     constructor() {
         this.apiKey = '';
-        this.model = 'gemini-2.0-flash-exp';
+        this.model = 'gemini-3-pro-preview'; // 默认使用最新的 Gemini 3.0 Pro
         this.messages = [];
         this.init();
     }
@@ -124,6 +124,8 @@ export class AIAssistant {
 
     getModelName(modelId) {
         const modelNames = {
+            'gemini-3-pro-preview': 'Gemini 3.0 Pro',
+            'gemini-3-flash-preview': 'Gemini 3.0 Flash',
             'gemini-2.0-flash-exp': 'Gemini 2.0 Flash',
             'gemini-2.0-flash-thinking-exp': 'Gemini 2.0 Flash Thinking',
             'gemini-1.5-pro-latest': 'Gemini 1.5 Pro (最新)',
@@ -136,8 +138,19 @@ export class AIAssistant {
 
     getModelConfig(modelId) {
         // 针对不同模型返回优化的配置
+        const isGemini3 = modelId.startsWith('gemini-3');
         const isThinking = modelId.includes('thinking');
         const isFast = modelId.includes('flash-8b');
+
+        // Gemini 3.0 模型支持更大的输出
+        if (isGemini3) {
+            return {
+                temperature: modelId.includes('pro') ? 1.0 : 0.9,
+                topK: 64,
+                topP: 0.95,
+                maxOutputTokens: 8192  // Gemini 3 支持最多 64k，这里用 8k 平衡速度
+            };
+        }
 
         return {
             temperature: isThinking ? 1.0 : 0.9,
