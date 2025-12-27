@@ -1,0 +1,96 @@
+===========================================
+  小说创作工作室 - 使用说明
+===========================================
+
+你好！看起来你正在使用 Claude Code 的远程容器环境。
+在这种环境下，无法直接从浏览器访问容器内的服务器。
+
+以下是几种使用这个应用的方法：
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+方法 1：下载项目到本地运行（推荐）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. 下载整个项目
+   - 从 GitHub 克隆或下载整个 gemini-playground 项目
+
+2. 在本地电脑上打开终端/命令行
+
+3. 进入项目目录：
+   cd gemini-playground
+
+4. 启动服务器：
+   node server.js
+
+5. 打开浏览器访问：
+   http://localhost:8787/novel-writer.html
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+方法 2：使用 GitHub Codespaces 的端口转发
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+如果你在 GitHub Codespaces 或 VS Code 中：
+
+1. 查找"端口"(Ports) 面板
+2. 服务器运行在端口 8787
+3. 点击端口旁边的"在浏览器中打开"图标
+4. 访问 /novel-writer.html 路径
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+方法 3：查看文件结构（临时方案）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+你可以先查看代码文件来了解应用结构：
+
+主要文件：
+📄 src/static/novel-writer.html        - 主界面
+📄 src/static/css/novel-writer.css     - 样式文件
+📂 src/static/js/novel/                - JavaScript 模块
+   ├── main.js                         - 主入口
+   ├── storage.js                      - 数据存储
+   ├── idea-manager.js                 - 创意管理
+   ├── book-analyzer.js                - 拆书分析
+   ├── novel-composer.js               - 小说创作
+   ├── workspace.js                    - 工作区
+   ├── ai-assistant.js                 - AI 助手
+   └── ui-utils.js                     - UI 工具
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+方法 4：通过 Git 获取代码
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+代码已提交到分支：claude/novel-writing-app-Kra5R
+
+在本地电脑上运行：
+git clone <repository-url>
+cd gemini-playground
+git checkout claude/novel-writing-app-Kra5R
+node server.js
+
+然后访问：http://localhost:8787/novel-writer.html
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+常见问题
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q: 为什么不能直接打开 HTML 文件？
+A: 应用使用了 ES6 模块，需要通过 HTTP 服务器访问才能正常工作。
+
+Q: 需要安装什么软件？
+A: 只需要 Node.js。下载地址：https://nodejs.org/
+
+Q: 数据存储在哪里？
+A: 所有数据存储在浏览器的 IndexedDB 中，完全本地化。
+
+Q: AI 功能需要什么？
+A: 需要 Gemini API Key，可以在 Google AI Studio 免费获取。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+需要帮助？
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+如果还有问题，请告诉我：
+1. 你使用的是什么操作系统？
+2. 你是否可以在本地电脑上运行Node.js？
+3. 你是否有访问 GitHub 的权限？
+
