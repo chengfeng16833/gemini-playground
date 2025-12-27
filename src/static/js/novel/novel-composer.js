@@ -1,6 +1,7 @@
 // 小说创作模块
 import { storage } from './storage.js';
-import { showModal, showToast } from './ui-utils.js';
+import { showModal, showToast, showLoading } from './ui-utils.js';
+import { importTools } from './import-tools.js';
 
 export class NovelComposer {
     constructor() {
@@ -17,6 +18,128 @@ export class NovelComposer {
         document.getElementById('add-novel')?.addEventListener('click', () => {
             this.showNovelModal();
         });
+
+        // 导入小说
+        document.getElementById('import-novel')?.addEventListener('click', () => {
+            this.importNovel();
+        });
+    }
+
+    async importNovel() {
+        try {
+            const files = await importTools.selectFiles(false);
+            if (files.length === 0) return;
+
+            const loading = showLoading('正在导入小说...');
+
+            const content = await importTools.readTextFile(files[0]);
+            const fileName = files[0].name.replace(/\.[^/.]+$/, '');
+
+            // 分析文本内容
+            const analyzed = importTools.analyzeText(content);
+
+            loading.close();
+
+            // 显示导入预览
+            showModal({
+                title: '导入小说',
+                content: `
+                    <div class="form-group">
+                        <label>小说标题</label>
+                        <input type="text" id="import-novel-title" value="${this.escapeHtml(fileName)}" class="input-field">
+                    </div>
+                    <div class="form-group">
+                        <label>类型</label>
+                        <select id="import-novel-genre" class="select-field">
+                            <option value="">选择类型</option>
+                            <option value="玄幻">玄幻</option>
+                            <option value="武侠">武侠</option>
+                            <option value="都市">都市</option>
+                            <option value="科幻">科幻</option>
+                            <option value="历史">历史</option>
+                            <option value="悬疑">悬疑</option>
+                            <option value="言情">言情</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div style="margin: 16px 0; padding: 12px; background: var(--bg-tertiary); border-radius: 8px;">
+                        <p style="font-size: 14px; margin-bottom: 8px;">检测到：</p>
+                        <ul style="font-size: 14px; color: var(--text-secondary); margin-left: 20px;">
+                            <li>总字数：${analyzed.totalWords.toLocaleString()} 字</li>
+                            <li>章节数：${analyzed.chapterCount} 章</li>
+                        </ul>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="auto-split-chapters" ${analyzed.chapterCount > 1 ? 'checked' : ''}>
+                            自动分章（检测到 ${analyzed.chapterCount} 个章节）
+                        </label>
+                    </div>
+                `,
+                confirmText: '导入',
+                onConfirm: async () => {
+                    const title = document.getElementById('import-novel-title').value.trim();
+                    const genre = document.getElementById('import-novel-genre').value;
+                    const autoSplit = document.getElementById('auto-split-chapters').checked;
+
+                    if (!title) {
+                        showToast('请输入小说标题', 'error');
+                        return false;
+                    }
+
+                    const importLoading = showLoading('正在保存小说...');
+
+                    try {
+                        // 创建小说记录
+                        const novelId = await storage.add('novels', {
+                            title,
+                            genre,
+                            synopsis: analyzed.chapters.length > 0 ? analyzed.chapters[0].content.substring(0, 200) : '',
+                            outline: '',
+                            wordCount: analyzed.totalWords
+                        });
+
+                        // 导入章节
+                        if (autoSplit && analyzed.chapters.length > 0) {
+                            // 自动分章
+                            for (let i = 0; i < analyzed.chapters.length; i++) {
+                                await storage.add('chapters', {
+                                    novelId,
+                                    title: analyzed.chapters[i].title,
+                                    content: analyzed.chapters[i].content,
+                                    order: i
+                                });
+                            }
+                        } else {
+                            // 作为单章导入
+                            await storage.add('chapters', {
+                                novelId,
+                                title: '正文',
+                                content: content,
+                                order: 0
+                            });
+                        }
+
+                        importLoading.close();
+                        showToast(`成功导入小说《${title}》，共 ${analyzed.chapterCount} 章`, 'success');
+                        this.render();
+                        return true;
+
+                    } catch (error) {
+                        importLoading.close();
+                        console.error('Import novel error:', error);
+                        showToast('导入失败：' + error.message, 'error');
+                        return false;
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error('Import error:', error);
+            if (error.message !== '未选择文件') {
+                showToast('导入失败：' + error.message, 'error');
+            }
+        }
     }
 
     async render() {

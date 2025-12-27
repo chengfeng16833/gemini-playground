@@ -1,6 +1,7 @@
 // 创意管理模块
 import { storage } from './storage.js';
 import { showModal, showToast } from './ui-utils.js';
+import { importTools } from './import-tools.js';
 
 export class IdeaManager {
     constructor() {
@@ -20,6 +21,11 @@ export class IdeaManager {
             this.showIdeaModal();
         });
 
+        // 导入创意文件
+        document.getElementById('import-ideas')?.addEventListener('click', () => {
+            this.importIdeasFromFile();
+        });
+
         // 搜索
         document.getElementById('idea-search')?.addEventListener('input', (e) => {
             this.searchTerm = e.target.value.toLowerCase();
@@ -31,6 +37,68 @@ export class IdeaManager {
             this.currentFilter = e.target.value;
             this.render();
         });
+    }
+
+    async importIdeasFromFile() {
+        try {
+            // 选择文件
+            const files = await importTools.selectFiles(true);
+
+            if (files.length === 0) return;
+
+            showToast('正在读取文件...', 'info');
+
+            // 读取所有文件
+            const results = await importTools.readMultipleFiles(files);
+
+            let successCount = 0;
+            let failCount = 0;
+
+            for (const result of results) {
+                if (result.success) {
+                    // 智能解析文件内容
+                    const analyzed = importTools.analyzeText(result.content);
+
+                    if (analyzed.chapters.length > 0) {
+                        // 如果检测到章节，每个章节作为一个创意
+                        for (const chapter of analyzed.chapters) {
+                            await storage.add('ideas', {
+                                title: chapter.title,
+                                category: 'plot',
+                                content: chapter.content
+                            });
+                            successCount++;
+                        }
+                    } else {
+                        // 否则整个文件作为一个创意
+                        const fileName = result.name.replace(/\.[^/.]+$/, '');
+                        await storage.add('ideas', {
+                            title: fileName,
+                            category: 'other',
+                            content: result.content
+                        });
+                        successCount++;
+                    }
+                } else {
+                    failCount++;
+                    console.error(`导入失败: ${result.name} - ${result.error}`);
+                }
+            }
+
+            // 显示结果
+            if (successCount > 0) {
+                showToast(`成功导入 ${successCount} 个创意${failCount > 0 ? `，${failCount} 个失败` : ''}`, 'success');
+                this.render();
+            } else {
+                showToast('导入失败', 'error');
+            }
+
+        } catch (error) {
+            console.error('Import error:', error);
+            if (error.message !== '未选择文件') {
+                showToast('导入失败：' + error.message, 'error');
+            }
+        }
     }
 
     async render() {

@@ -1,6 +1,7 @@
 // 拆书分析模块
 import { storage } from './storage.js';
-import { showModal, showToast } from './ui-utils.js';
+import { showModal, showToast, showLoading } from './ui-utils.js';
+import { importTools } from './import-tools.js';
 
 export class BookAnalyzer {
     constructor() {
@@ -15,6 +16,109 @@ export class BookAnalyzer {
     bindEvents() {
         document.getElementById('add-analysis')?.addEventListener('click', () => {
             this.showAnalysisModal();
+        });
+
+        // 导入文件
+        document.getElementById('import-file-analysis')?.addEventListener('click', () => {
+            this.importFromFile();
+        });
+
+        // 网页抓取
+        document.getElementById('import-web-analysis')?.addEventListener('click', () => {
+            this.importFromWeb();
+        });
+    }
+
+    async importFromFile() {
+        try {
+            const files = await importTools.selectFiles(false);
+            if (files.length === 0) return;
+
+            const result = await importTools.readTextFile(files[0]);
+            const fileName = files[0].name.replace(/\.[^/.]+$/, '');
+
+            // 分析文本内容
+            const analyzed = importTools.analyzeText(result);
+
+            // 创建分析记录
+            await storage.add('analyses', {
+                bookTitle: fileName,
+                author: '',
+                summary: analyzed.chapters.length > 0 ? analyzed.chapters[0].content.substring(0, 200) : result.substring(0, 200),
+                plotAnalysis: '',
+                characterAnalysis: '',
+                writingTechniques: '',
+                themeAnalysis: '',
+                notes: result
+            });
+
+            showToast('文件导入成功！', 'success');
+            this.render();
+
+        } catch (error) {
+            console.error('Import error:', error);
+            if (error.message !== '未选择文件') {
+                showToast('导入失败：' + error.message, 'error');
+            }
+        }
+    }
+
+    async importFromWeb() {
+        showModal({
+            title: '从网页抓取内容',
+            content: `
+                <div class="form-group">
+                    <label>网页地址 (URL)</label>
+                    <input type="url" id="web-url-input" placeholder="https://example.com/article" class="input-field">
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                        注意：部分网站可能因CORS限制无法直接抓取
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label>作品标题（可选）</label>
+                    <input type="text" id="web-book-title" placeholder="如果留空将使用网页标题" class="input-field">
+                </div>
+            `,
+            confirmText: '抓取',
+            onConfirm: async () => {
+                const url = document.getElementById('web-url-input').value.trim();
+                const customTitle = document.getElementById('web-book-title').value.trim();
+
+                if (!url) {
+                    showToast('请输入网页地址', 'error');
+                    return false;
+                }
+
+                const loading = showLoading('正在抓取网页内容...');
+
+                try {
+                    const webData = await importTools.fetchWebPage(url);
+
+                    loading.close();
+
+                    // 创建分析记录
+                    await storage.add('analyses', {
+                        bookTitle: customTitle || webData.title,
+                        author: '',
+                        summary: webData.summary,
+                        plotAnalysis: '',
+                        characterAnalysis: '',
+                        writingTechniques: '',
+                        themeAnalysis: '',
+                        notes: `来源：${url}\n\n${webData.content}`
+                    });
+
+                    showToast('网页内容抓取成功！', 'success');
+                    this.render();
+                    return true;
+
+                } catch (error) {
+                    loading.close();
+                    console.error('Web fetch error:', error);
+                    showToast(error.message, 'error');
+                    return false;
+                }
+            }
         });
     }
 

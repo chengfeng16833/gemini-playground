@@ -97,10 +97,16 @@
             <div id="idea-manager-module" class="module">
                 <div class="module-header">
                     <h2>创意管理</h2>
-                    <button id="add-idea" class="primary-button">
-                        <span class="material-symbols-outlined">add</span>
-                        新增创意
-                    </button>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="import-ideas" class="secondary-button">
+                            <span class="material-symbols-outlined">upload_file</span>
+                            导入文件
+                        </button>
+                        <button id="add-idea" class="primary-button">
+                            <span class="material-symbols-outlined">add</span>
+                            新增创意
+                        </button>
+                    </div>
                 </div>
                 <div class="idea-filters">
                     <input type="text" id="idea-search" placeholder="搜索创意..." class="search-input">
@@ -122,10 +128,20 @@
             <div id="book-analyzer-module" class="module">
                 <div class="module-header">
                     <h2>拆书分析</h2>
-                    <button id="add-analysis" class="primary-button">
-                        <span class="material-symbols-outlined">add</span>
-                        新建分析
-                    </button>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="import-web-analysis" class="secondary-button">
+                            <span class="material-symbols-outlined">link</span>
+                            网页抓取
+                        </button>
+                        <button id="import-file-analysis" class="secondary-button">
+                            <span class="material-symbols-outlined">upload_file</span>
+                            导入文件
+                        </button>
+                        <button id="add-analysis" class="primary-button">
+                            <span class="material-symbols-outlined">add</span>
+                            新建分析
+                        </button>
+                    </div>
                 </div>
                 <div id="analysis-list" class="analysis-list">
                     <p class="empty-message">暂无分析笔记，点击"新建分析"开始拆解作品</p>
@@ -136,10 +152,16 @@
             <div id="novel-composer-module" class="module">
                 <div class="module-header">
                     <h2>小说创作</h2>
-                    <button id="add-novel" class="primary-button">
-                        <span class="material-symbols-outlined">add</span>
-                        新建小说
-                    </button>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="import-novel" class="secondary-button">
+                            <span class="material-symbols-outlined">upload_file</span>
+                            导入小说
+                        </button>
+                        <button id="add-novel" class="primary-button">
+                            <span class="material-symbols-outlined">add</span>
+                            新建小说
+                        </button>
+                    </div>
                 </div>
                 <div id="novel-list" class="novel-list">
                     <p class="empty-message">暂无小说项目，点击"新建小说"开始创作</p>
